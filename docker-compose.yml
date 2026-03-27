@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: bigdata_spark_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./DDL.sql:/docker-entrypoint-initdb.d/01_DDL.sql
+      - ./mock_data.sql:/docker-entrypoint-initdb.d/02_mock_data.sql
+      - ./DML.sql:/docker-entrypoint-initdb.d/03_DML.sql
+      - ./analysis.sql:/docker-entrypoint-initdb.d/04_analysis.sql
+      - ./исходные данные:/docker-entrypoint-initdb.d/data
+    networks:
+      - data_network
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: bigdata_spark_clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - data_network
+
+networks:
+  data_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  clickhouse_data:
