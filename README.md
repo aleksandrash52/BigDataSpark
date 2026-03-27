@@ -73,4 +73,4 @@ docker exec -it bigdata_spark_postgres psql -U postgres -d postgres -c "SELECT C
 
 ClickHouse (отчёты)
 bash:
-docker exec -it bigdata_spark_clickhouse clickhouse-client --query "SELECT * FROM reports.top_products LIMIT 10 FORMAT Pretty"
+docker exec -it bigdata_spark_clickhouse clickhouse-client --user spark_user --password spark123 --query "SELECT * FROM reports.top_products LIMIT 10 FORMAT Pretty"
