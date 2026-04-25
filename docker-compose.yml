@@ -35,6 +35,63 @@ services:
     networks:
       - data_network
 
+  spark-master:
+    image: apache/spark:3.5.0
+    container_name: spark_master
+    restart: always
+    environment:
+      SPARK_MASTER_HOST: spark-master
+      SPARK_MASTER_PORT: 7077
+      SPARK_MASTER_WEBUI_PORT: 8080
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    volumes:
+      - ./jars:/opt/spark/drivers
+      - ./spark_apps:/opt/spark/apps
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master --host spark-master --port 7077 --webui-port 8080
+    networks:
+      - data_network
+
+  spark-worker:
+    image: apache/spark:3.5.0
+    container_name: spark_worker
+    restart: always
+    environment:
+      SPARK_WORKER_MEMORY: 2G
+      SPARK_WORKER_CORES: 1
+      SPARK_WORKER_WEBUI_PORT: 8081
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./jars:/opt/spark/drivers
+      - ./spark_apps:/opt/spark/apps
+    depends_on:
+      - spark-master
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077 --webui-port 8081
+    networks:
+      - data_network
+
+  jupyter:
+    image: jupyter/all-spark-notebook:latest
+    container_name: jupyter_lab2
+    restart: always
+    user: root
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./spark_apps:/home/jovyan/work
+      - ./jars:/opt/spark/drivers
+    environment:
+      JUPYTER_ENABLE_LAB: yes
+      PYSPARK_SUBMIT_ARGS: --jars /opt/spark/drivers/postgresql-42.7.3.jar pyspark-shell
+      SPARK_LOCAL_IP: jupyter_lab2
+    command: start-notebook.sh --ServerApp.token='' --ServerApp.password=''
+    networks:
+      - data_network
+    extra_hosts:
+    - "bigdata_spark_postgres:172.19.0.5"
+
 networks:
   data_network:
     driver: bridge
