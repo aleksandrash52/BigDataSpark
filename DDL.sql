@@ -35,6 +35,8 @@ CREATE TABLE analytics.dim_product (
     product_color VARCHAR(50),
     product_size VARCHAR(50),
     product_material VARCHAR(100)
+    product_rating NUMERIC(3,1),
+    product_reviews INT
 );
 
 
