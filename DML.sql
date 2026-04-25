@@ -34,6 +34,7 @@ ON CONFLICT (seller_email) DO NOTHING;
 INSERT INTO analytics.dim_product (
     product_name, product_brand, product_price, product_category,
     product_weight, product_color, product_size, product_material
+    product_rating, product_reviews
 )
 SELECT DISTINCT
     product_name,
@@ -44,6 +45,8 @@ SELECT DISTINCT
     product_color,
     product_size,
     product_material
+    product_rating,
+    product_reviews 
 FROM public.mock_data;
 
 
