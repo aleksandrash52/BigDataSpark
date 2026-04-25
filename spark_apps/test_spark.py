@@ -7,7 +7,7 @@ spark = SparkSession.builder \
 
 print("Spark version:", spark.version)
 
-jdbc_url = "jdbc:postgresql://localhost:5432/postgres"
+jdbc_url = "jdbc:postgresql://172.19.0.5:5432/postgres"
 properties = {
     "user": "postgres",
     "password": "12345",
